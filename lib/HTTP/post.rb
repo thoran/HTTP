@@ -1,8 +1,8 @@
 # HTTP/post.rb
-# HTTP#post.rb
+# HTTP.post
 
-# 20130310
-# 0.8.5
+# 20130312
+# 0.8.6
 
 # Changes: 
 # 1. The parameter, data, can now also accept a :header argument which contains a hash of key-value pairs to be set as part of the header for the request.  
@@ -15,6 +15,8 @@
 # 5. + Net::HTTP::Post#set_headers.  
 # 4/5
 # 6. It now returns the response object and not the body of the response object.  
+# 5/6
+# 7. Version number bump due to change back to the existing interface for HTTP.get.  
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
