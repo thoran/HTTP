@@ -1,29 +1,20 @@
 # HTTP#get
 
 # 20120611
-# 0.5.1
+# 0.6.0
 
-# Changes since 0.4: 
-# 0 (Removed Mechanize, since it wasn't working properly, but did 'retain' Nokogiri.)
-# 1. - require 'MechanizeHelper.rbd/MechanizeHelper'.  
-# 2. + require 'Hash/to_parameter_string'.  
-# 3. + require 'nokogiri'.  
-# 0/1 (Added the bare minimum of encoding support.)
-# 4. Added UTF-8 encoding to Nokogiri's parser.  
-# 5. /Nokogiri::HTML/Nokogiri::HTML.parse/.  
+# Changes since 0.5: 
+# 1. Swapped back to using MechanizeHelper again, but with encoding support.  
 
-require 'Hash/to_parameter_string'
-require 'net/http'
-require 'nokogiri'
+require 'MechanizeHelper.rbd/MechanizeHelper'
 require 'uri'
 
 module HTTP
   
-  def get(url, params = {}, encoding = 'UTF-8')
+  def get(url, args = {}, agent = 'Windows IE 6', mech_instance = nil, encoding = 'UTF-8')
     uri = URI.parse(url)
-    path = params.empty? ? uri.path : "#{uri.path}?#{params.to_parameter_string}"
-    body = Net::HTTP.get(uri.host, path, uri.port)
-    page = Nokogiri::HTML.parse(body, url, encoding)
+    url = MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path, args)
+    page = MechanizeHelper::Page.new(url, {}, agent, mech_instance, encoding)
     if block_given?
       yield page
     else
