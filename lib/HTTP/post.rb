@@ -2,7 +2,7 @@
 # HTTP.post
 
 # 20150303
-# 0.9.9
+# 0.9.10
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -26,6 +26,8 @@
 # 8/9
 # 11. + require 'Net/HTTP/Post/set_headers' and removal of the same code from being here.
 # 12. + require 'URI/Generic/use_sslQ' and removal of the same code from being here.
+# 9/10
+# 13. No longer parsing the response.header['location'], since it probably shouldn't be.
 
 require 'net/http'
 require 'openssl'
@@ -47,8 +49,7 @@ module HTTP
     request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)
     if ['301', '302'].include?(response.code)
-      new_uri = URI.parse(response.header['location'])
-      response = get(new_uri, {}, {}, options, &block)
+      response = get(response.header['location'], {}, {}, options, &block)
     end
     if block_given?
       yield response

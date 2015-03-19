@@ -2,7 +2,7 @@
 # HTTP.get
 
 # 20150303
-# 0.9.9
+# 0.9.10
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -26,6 +26,8 @@
 # 8/9
 # 11. + require 'Net/HTTP/Get/set_headers' and removal of the same code from being here.
 # 12. + require 'URI/Generic/use_sslQ' and removal of the same code from being here.
+# 9/10
+# 13. Version number bump in concert with the change in HTTP/post.rb.
 
 require 'net/http'
 require 'openssl'
