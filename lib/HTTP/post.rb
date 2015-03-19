@@ -1,30 +1,24 @@
 # HTTP#post
 
-# 20120403
-# 0.4.0
+# 20120610
+# 0.5.0
 
-# Changes since 0.3: 
-# 1. Separated get and post.  
-# 2. + module_function :post.  
-# 3. Explicitly requiring 'uri', rather than relying on it being there implicitly by virtue of it being used in MechanizeHelper, if not Mechanize itself.  
-# 4. Fixed a bug whereby the arguments were being passed on directly to MechanizeHelper::Page without being put into a :post hash.  
+# Changes since 0.4: 
+# 0 (Removed Mechanize, since it wasn't working properly, but did 'retain' Nokogiri.)
+# 1. - require 'MechanizeHelper.rbd/MechanizeHelper'.  
+# 2. + require 'Hash/to_parameter_string'.  
+# 3. + require 'nokogiri'.  
 
-require 'MechanizeHelper.rbd/MechanizeHelper'
+require 'Hash/to_parameter_string'
+require 'net/http'
+require 'nokogiri'
 require 'uri'
 
 module HTTP
   
-  def post(url_or_page_object, args = {}, agent = 'Windows IE 6', mech_instance = nil)
-    url = (
-      case url_or_page_object
-      when String
-        uri = URI.parse(url_or_page_object)
-        MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path)
-      when MechanizeHelper::Page
-        url_or_page_object.url
-      end
-    )
-    page = MechanizeHelper::Page.new(url, {:post => args}, agent, mech_instance)
+  def post(url, params = {})
+    body = Net::HTTP.post_form(url, params)
+    page = Nokogiri::HTML(body)
     if block_given?
       yield page
     else
