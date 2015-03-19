@@ -1,8 +1,8 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20140917, 1025
-# 0.9.3
+# 20141029
+# 0.9.4
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -12,8 +12,8 @@
 # 3. Version number bump to match the change to HTTP.get.
 # 2/3
 # 4. + require 'openssl', since it seems to explicitly need to be required as of Ruby 2 somewhere.
-
-# Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
+# 3/4
+# 5. Enabled Basic authentication to be automatically applied if there is a username and password in the supplied uri.
 
 require 'net/http'
 require 'openssl'
@@ -49,6 +49,7 @@ module HTTP
     request_object = Net::HTTP::Post.new(uri.request_uri)
     request_object.form_data = form_data
     request_object.headers = headers
+    request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)
     if block_given?
       yield response
