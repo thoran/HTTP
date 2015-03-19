@@ -2,7 +2,10 @@
 # HTTP#post.rb
 
 # 20130307
-# 0.8.0
+# 0.8.1
+
+# Changes: 
+# 1. The parameter, data, can now also accept a :header argument which contains a hash of key-value pairs to be set as part of the header for the request.  
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)
 
@@ -32,6 +35,9 @@ module HTTP
     http.use_ssl = uri_object.use_ssl?
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request_object = Net::HTTP::Post.new(uri_object.request_uri)
+    if header = data.delete(:header)
+      header.each{|k,v| request_object[k] = v}
+    end
     request_object.set_form_data(data)
     response = http.request(request_object)
     response.body
