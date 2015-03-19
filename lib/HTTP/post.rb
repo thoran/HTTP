@@ -2,7 +2,7 @@
 # HTTP.post
 
 # 20141029
-# 0.9.4
+# 0.9.5
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -14,6 +14,8 @@
 # 4. + require 'openssl', since it seems to explicitly need to be required as of Ruby 2 somewhere.
 # 3/4
 # 5. Enabled Basic authentication to be automatically applied if there is a username and password in the supplied uri.
+# 4/5
+# 6. ~ #post so as it can handle 301's, though it isn't smart enough to detect infinite redirects.
 
 require 'net/http'
 require 'openssl'
@@ -51,6 +53,19 @@ module HTTP
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)
+    if response.code == '301'
+      new_uri = URI.parse(response.header['location'])
+      if uri.user
+        if uri.password
+          new_uri_sans_args = "#{new_uri.scheme}://#{uri.user}:#{uri.password}@#{new_uri.host}#{new_uri.path}"          
+        else
+          new_uri_sans_args = "#{new_uri.scheme}://#{uri.user}@#{new_uri.host}#{new_uri.path}"
+        end
+      else
+        new_uri_sans_args = "#{new_uri.scheme}://#{new_uri.host}#{new_uri.path}"
+      end
+      get(new_uri_sans_args, args, headers, options, &block)
+    end
     if block_given?
       yield response
     else
