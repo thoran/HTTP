@@ -2,10 +2,12 @@
 # HTTP.post
 
 # 20130320
-# 0.9.0
+# 0.9.1
 
 # Changes since 0.8: 
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.  
+# 0/1
+# 2. ~ #post so as it can handle options for the http object.  
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
@@ -33,11 +35,12 @@ end
 
 module HTTP
 
-  def post(uri, form_data = {}, headers = {})
+  def post(uri, form_data = {}, headers = {}, options = {})
     uri = URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = uri.use_ssl?
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    http.use_ssl = options[:use_ssl] || uri.use_ssl?
+    http.verify_mode = options[:verify_mode] || OpenSSL::SSL::VERIFY_NONE
+    options.each{|k,v| http.send("#{k}=", v)}
     request_object = Net::HTTP::Post.new(uri.request_uri)
     request_object.form_data = form_data
     request_object.headers = headers

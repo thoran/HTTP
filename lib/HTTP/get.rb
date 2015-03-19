@@ -1,11 +1,13 @@
 # HTTP/get.rb
 # HTTP.get
 
-# 20130320
-# 0.9.0
+# 20130412
+# 0.9.1
 
 # Changes since 0.8: 
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.  
+# 0/1
+# 2. ~ #get so as it can handle options for the http object.  
 
 require 'net/http'
 require 'uri'
@@ -32,11 +34,12 @@ end
 
 module HTTP
 
-  def get(uri, args = {}, headers = {})
+  def get(uri, args = {}, headers = {}, options = {})
     uri = URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = uri.use_ssl?
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    http.use_ssl = options[:use_ssl] || uri.use_ssl?
+    http.verify_mode = options[:verify_mode] || OpenSSL::SSL::VERIFY_NONE
+    options.each{|k,v| http.send("#{k}=", v)}
     request_object = Net::HTTP::Get.new(uri.request_uri + '?' + args.x_www_form_urlencode)
     request_object.headers = headers
     response = http.request(request_object)
