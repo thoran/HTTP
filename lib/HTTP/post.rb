@@ -1,13 +1,15 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20130320
-# 0.9.1
+# 20131230
+# 0.9.2
 
-# Changes since 0.8: 
-# 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.  
+# Changes since 0.8:
+# 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
 # 0/1
-# 2. ~ #post so as it can handle options for the http object.  
+# 2. ~ #post so as it can handle options for the http object.
+# 1/2
+# 3. Version number bump to match the change to HTTP.get.
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
