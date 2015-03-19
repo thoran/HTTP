@@ -1,23 +1,30 @@
 module HTTP
   
-  def get(path_or_url, args = {}, mech_instance = nil)
-    uri = URI.parse(path_or_url)
-    if uri.scheme
-      WWW::MechanizeHelper::Page.new(WWW::MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path, args))
+  def get(url, args = {}, agent = 'Windows IE 6', mech_instance = nil)
+    uri = URI.parse(url)
+    page = WWW::MechanizeHelper::Page.new(WWW::MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path, args), {}, agent, mech_instance)
+    if block_given?
+      yield page
     else
-      WWW::MechanizeHelper::Page.new(WWW::MechanizeHelper::Url.to_s('http', DOMAIN, nil, path_or_url, args))
+      page
     end
   end
   
-  def post(path_or_page_object, args = {}, mech_instance = nil)
-    case path_or_page_object
-    when String
-      url = WWW::MechanizeHelper::Url.to_s('http', DOMAIN, path_or_path_object)
-    when WWW::MechanizeHelper::Page
-      url = path_or_page_object.url
+  def post(url_or_page_object, args = {}, agent = 'Windows IE 6', mech_instance = nil)
+    page = (
+      case url_or_page_object
+      when String
+        uri = URI.parse(url_or_page_object)
+        WWW::MechanizeHelper::Page.new(WWW::MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path), args, agent, mech_instance)
+      when WWW::MechanizeHelper::Page
+        WWW::MechanizeHelper::Page.new(path_or_page_object.url, args, agent, mech_instance)
+      end
+    )
+    if block_given?
+      yield page
+    else
+      page
     end
-    pp url
-    WWW::MechanizeHelper::Page.new(url, args, 'Windows IE 6', mech_instance)
   end
   
 end
