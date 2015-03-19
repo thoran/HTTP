@@ -7,8 +7,6 @@ require 'spec_helper'
 
 require 'HTTP/get'
 require 'HTTP/post'
-require 'HTTP/write'
 
 require 'HTTP/get_spec'
 require 'HTTP/post_spec'
-require 'HTTP/write_spec'

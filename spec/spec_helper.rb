@@ -5,5 +5,3 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'webmock/rspec'
 WebMock.allow_net_connect!
-
-require 'fakefs/safe'
