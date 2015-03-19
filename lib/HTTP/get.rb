@@ -1,8 +1,8 @@
 # HTTP/get.rb
 # HTTP.get
 
-# 20141030
-# 0.9.5
+# 20141030, 1113
+# 0.9.6
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -16,6 +16,8 @@
 # 5. Enabled Basic authentication to be automatically applied if there is a username and password in the supplied uri.
 # 4/5
 # 6. Version number bump to match the change to HTTP.post.
+# 5/6
+# 7. /URI::HTTP/URI::Generic/, since the former wasn't working.
 
 require 'net/http'
 require 'openssl'
@@ -23,7 +25,7 @@ require 'uri'
 require 'Hash/x_www_form_urlencode'
 
 module URI
-  class HTTP
+  class Generic
 
     def use_ssl?
       scheme == 'https' ? true : false

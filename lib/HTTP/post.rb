@@ -1,8 +1,8 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20141029
-# 0.9.5
+# 20141029, 1113
+# 0.9.6
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -16,13 +16,15 @@
 # 5. Enabled Basic authentication to be automatically applied if there is a username and password in the supplied uri.
 # 4/5
 # 6. ~ #post so as it can handle 301's, though it isn't smart enough to detect infinite redirects.
+# 5/6
+# 7. /URI::HTTP/URI::Generic/, since the former wasn't working.
 
 require 'net/http'
 require 'openssl'
 require 'uri'
 
 module URI
-  class HTTP
+  class Generic
 
     def use_ssl?
       scheme == 'https' ? true : false
