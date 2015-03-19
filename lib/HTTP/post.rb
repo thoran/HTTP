@@ -2,7 +2,7 @@
 # HTTP#post.rb
 
 # 20130309
-# 0.8.3
+# 0.8.4
 
 # Changes: 
 # 1. The parameter, data, can now also accept a :header argument which contains a hash of key-value pairs to be set as part of the header for the request.  
@@ -11,6 +11,8 @@
 # 2/3
 # 3. Headers are now set via a separate parameter, since it is possible that form data may include the key 'headers'!  
 # 4. - URI::HTTP.interpolated_port.  
+# 3/4
+# 5. + Net::HTTP::Post#set_headers.  
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
@@ -27,6 +29,15 @@ module URI
   end
 end
 
+class Net::HTTP::Post
+
+  def set_headers(headers = {})
+    headers.each{|k,v| self[k] = v}
+  end
+  alias_method :headers=, :set_headers
+
+end
+
 module HTTP
 
   def post(uri, form_data = {}, headers = {})
@@ -36,7 +47,7 @@ module HTTP
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request_object = Net::HTTP::Post.new(uri.request_uri)
     request_object.form_data = form_data
-    headers.each{|k,v| request_object[k] = v}
+    request_object.headers = headers
     response = http.request(request_object)
     response.body
   end
