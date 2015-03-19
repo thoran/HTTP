@@ -1,8 +1,8 @@
 # HTTP/get.rb
 # HTTP.get
 
-# 20141113
-# 0.9.8
+# 20150303
+# 0.9.9
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -23,30 +23,16 @@
 # 7/8
 # 9. I wasn't reconstructing the parameters before recursing and if I did that then I may as well pass in the location directly.  Not sure if there is much value in having the same arguments supplied to the initial request passed to any subsequent request, though I am passing in the options for now, though not the args/params nor the headers.
 # 10. I also wasn't resassigning the response variable as I should with any of the returned values from subsequent calls else as it unwinds it will retain the value from the earlier recursion.
+# 8/9
+# 11. + require 'Net/HTTP/Get/set_headers' and removal of the same code from being here.
+# 12. + require 'URI/Generic/use_sslQ' and removal of the same code from being here.
 
 require 'net/http'
 require 'openssl'
 require 'uri'
 require 'Hash/x_www_form_urlencode'
-
-module URI
-  class Generic
-
-    def use_ssl?
-      scheme == 'https' ? true : false
-    end
-
-  end
-end
-
-class Net::HTTP::Get
-
-  def set_headers(headers = {})
-    headers.each{|k,v| self[k] = v}
-  end
-  alias_method :headers=, :set_headers
-
-end
+require 'Net/HTTP/Get/set_headers'
+require 'URI/Generic/use_sslQ'
 
 module HTTP
 
