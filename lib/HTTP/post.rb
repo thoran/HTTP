@@ -1,10 +1,11 @@
+# HTTP/post
 # HTTP#post
 
-# 20120611
-# 0.6.0
+# 20121002
+# 0.7.0
 
-# Changes since 0.5: 
-# 1. Swapped back to using MechanizeHelper again, but with encoding support.  
+# Changes since 0.6: 
+# 1. + module_function :post.  
 
 require 'MechanizeHelper.rbd/MechanizeHelper'
 require 'uri'
@@ -29,4 +30,6 @@ module HTTP
     end
   end
   
+  module_function :post
+
 end
