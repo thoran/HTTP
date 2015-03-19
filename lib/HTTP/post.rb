@@ -1,8 +1,8 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20141029, 1113
-# 0.9.6
+# 20141113
+# 0.9.7
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -18,6 +18,8 @@
 # 6. ~ #post so as it can handle 301's, though it isn't smart enough to detect infinite redirects.
 # 5/6
 # 7. /URI::HTTP/URI::Generic/, since the former wasn't working.
+# 6/7
+# 8. Also now handles redirects for 302's (temorary redirects) as well as 301's (permanent redirects).
 
 require 'net/http'
 require 'openssl'
@@ -55,7 +57,7 @@ module HTTP
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)
-    if response.code == '301'
+    if ['301', '302'].include?(response.code)
       new_uri = URI.parse(response.header['location'])
       if uri.user
         if uri.password
