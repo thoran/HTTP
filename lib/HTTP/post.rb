@@ -1,35 +1,48 @@
-# HTTP/post
-# HTTP#post
+# HTTP/post.rb
+# HTTP#post.rb
 
-# 20121002
-# 0.7.0
+# 20130307
+# 0.8.0
 
-# Changes since 0.6: 
-# 1. + module_function :post.  
+# Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)
 
-require 'MechanizeHelper.rbd/MechanizeHelper'
+require '_meta/blankQ'
+require 'net/http'
 require 'uri'
 
-module HTTP
-  
-  def post(url_or_page_object, args = {}, agent = 'Windows IE 6', mech_instance = nil, encoding = 'UTF-8')
-    url = (
-      case url_or_page_object
-      when String
-        uri = URI.parse(url_or_page_object)
-        MechanizeHelper::Url.to_s(uri.scheme, uri.host, uri.port, uri.path)
-      when MechanizeHelper::Page
-        url_or_page_object.url
-      end
-    )
-    page = MechanizeHelper::Page.new(url, {:post => args}, agent, mech_instance, encoding)
-    if block_given?
-      yield page
-    else
-      page
+module URI
+  class HTTP
+
+    def interpolated_port
+      scheme == 'https' ? 443 : 80
     end
+
+    def use_ssl?
+      scheme == 'https' ? true : false
+    end
+
   end
-  
+end
+
+module HTTP
+
+  def post(uri, data)
+    uri_object = URI.parse(uri)
+    http = Net::HTTP.new(uri_object.host, uri_object.port || uri_object.default_port)
+    http.use_ssl = uri_object.use_ssl?
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request_object = Net::HTTP::Post.new(uri_object.request_uri)
+    request_object.set_form_data(data)
+    response = http.request(request_object)
+    response.body
+  end
+
   module_function :post
 
+end
+
+if __FILE__ == $0
+  url = "http://w3schools.com/asp/demo_simpleform.asp"
+  args = {fname: 'thoran'}
+  puts HTTP.post(url, args)
 end
