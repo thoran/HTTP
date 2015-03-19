@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'HTTP'
-  s.version = '1.0.0'
+  s.version = '0.11.0'
   s.date = '2015-03-19'
 
   s.summary = "HTTP made easy."
