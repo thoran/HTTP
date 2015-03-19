@@ -1,8 +1,8 @@
 # HTTP/get.rb
 # HTTP.get
 
-# 20131230
-# 0.9.2
+# 20140917, 1025
+# 0.9.3
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -10,8 +10,11 @@
 # 2. ~ #get so as it can handle options for the http object.
 # 1/2
 # 3. ~ #get so as it can handle 301's, though it isn't smart enough to detect infinite redirects.
+# 2/3
+# 4. + require 'openssl', since it seems to explicitly need to be required as of Ruby 2 somewhere.
 
 require 'net/http'
+require 'openssl'
 require 'uri'
 require 'Hash/x_www_form_urlencode'
 

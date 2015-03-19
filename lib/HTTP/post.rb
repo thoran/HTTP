@@ -1,8 +1,8 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20131230
-# 0.9.2
+# 20140917, 1025
+# 0.9.3
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -10,10 +10,13 @@
 # 2. ~ #post so as it can handle options for the http object.
 # 1/2
 # 3. Version number bump to match the change to HTTP.get.
+# 2/3
+# 4. + require 'openssl', since it seems to explicitly need to be required as of Ruby 2 somewhere.
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
 require 'net/http'
+require 'openssl'
 require 'uri'
 
 module URI
