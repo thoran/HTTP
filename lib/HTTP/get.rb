@@ -2,7 +2,7 @@
 # HTTP.get
 
 # 20150303
-# 0.9.10
+# 0.9.11
 
 # Changes since 0.8:
 # 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.
@@ -28,6 +28,8 @@
 # 12. + require 'URI/Generic/use_sslQ' and removal of the same code from being here.
 # 9/10
 # 13. Version number bump in concert with the change in HTTP/post.rb.
+# 10/11
+# 14. Accepts either a String or a URI in the argument list.
 
 require 'net/http'
 require 'openssl'
@@ -39,7 +41,7 @@ require 'URI/Generic/use_sslQ'
 module HTTP
 
   def get(uri, args = {}, headers = {}, options = {}, &block)
-    uri = URI.parse(uri)
+    uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = options[:use_ssl] || uri.use_ssl?
     http.verify_mode = options[:verify_mode] || OpenSSL::SSL::VERIFY_NONE
