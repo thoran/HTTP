@@ -1,14 +1,11 @@
 # HTTP/get.rb
 # HTTP.get
 
-# 20130312
-# 0.8.6
+# 20130320
+# 0.9.0
 
-# Changes since 0.7: 
-# 1. Changed from using Mechanize and MechanizeHelper to using standard Ruby library objects.  
-# 2. Version number bump to be consistent with HTTP.post.  
-# 5/6
-# 3. + require 'Hash/x_www_form_urlencode' and use in HTTP.get.  
+# Changes since 0.8: 
+# 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.  
 
 require 'net/http'
 require 'uri'
@@ -43,7 +40,11 @@ module HTTP
     request_object = Net::HTTP::Get.new(uri.request_uri + '?' + args.x_www_form_urlencode)
     request_object.headers = headers
     response = http.request(request_object)
-    response
+    if block_given?
+      yield response
+    else
+      response
+    end
   end
 
   module_function :get

@@ -1,22 +1,11 @@
 # HTTP/post.rb
 # HTTP.post
 
-# 20130312
-# 0.8.6
+# 20130320
+# 0.9.0
 
-# Changes: 
-# 1. The parameter, data, can now also accept a :header argument which contains a hash of key-value pairs to be set as part of the header for the request.  
-# 1/2
-# 2. /header/headers/.  
-# 2/3
-# 3. Headers are now set via a separate parameter, since it is possible that form data may include the key 'headers'!  
-# 4. - URI::HTTP.interpolated_port.  
-# 3/4
-# 5. + Net::HTTP::Post#set_headers.  
-# 4/5
-# 6. It now returns the response object and not the body of the response object.  
-# 5/6
-# 7. Version number bump due to change back to the existing interface for HTTP.get.  
+# Changes since 0.8: 
+# 1. Can handle blocks as was the case up to 0.7.0, or pre 0.8.5 anyway.  
 
 # Notes: This doesn't return a MechanizeHelper::Page as was intended by the others, but it does work...  (Will get to the MechanizeHelper::Page version later.)  
 
@@ -53,7 +42,11 @@ module HTTP
     request_object.form_data = form_data
     request_object.headers = headers
     response = http.request(request_object)
-    response
+    if block_given?
+      yield response
+    else
+      response
+    end
   end
 
   module_function :post
