@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
 
   s.files = [
     'Gemfile',
-    'Gemfile.lock',
     'README.md',
     'HTTP.gemspec',
     Dir['lib/**/*.rb'],
