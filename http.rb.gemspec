@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = 'HTTP'
+  s.name = 'http.rb'
   s.version = '0.11.0'
   s.date = '2015-03-19'
 
