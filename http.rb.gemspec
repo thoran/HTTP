@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.files = [
     'Gemfile',
     'README.md',
-    'HTTP.gemspec',
+    'http.rb.gemspec',
     Dir['lib/**/*.rb'],
     Dir['spec/**/*.rb']
   ].flatten
