@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
     'HTTP.gemspec',
     Dir['lib/**/*.rb'],
     Dir['spec/**/*.rb']
-  ].compact
+  ].flatten
 
   s.require_paths = ['lib']
 
