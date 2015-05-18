@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'http.rb'
-  s.version = '0.11.0'
-  s.date = '2015-03-19'
+  s.version = '0.11.1'
+  s.date = '2015-05-18'
 
   s.summary = "HTTP made easy."
   s.description = "HTTP is the simplest HTTP mezzanine library for Ruby.  Supply a URI, \
