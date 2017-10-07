@@ -6,9 +6,6 @@ $LOAD_PATH.unshift(spec_dir) unless $LOAD_PATH.include?(spec_dir)
 require 'spec_helper'
 require 'HTTP/get'
 
-WebMock.enable!
-WebMock.disable_net_connect!(allow_localhost: true)
-
 describe ".get" do
 
   context "with uri-only supplied" do
@@ -144,12 +141,12 @@ describe ".get" do
       before do
         stub_request(:get, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-            to_return(status: '301', body: '', headers: {'location' => redirect_uri})
+            to_return(status: 301, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
         HTTP.get(request_uri)
       end
     end
@@ -158,12 +155,52 @@ describe ".get" do
       before do
         stub_request(:get, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-            to_return(status: '302', body: '', headers: {'location' => redirect_uri})
+            to_return(status: 302, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:get).with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {}).and_call_original
+        expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        HTTP.get(request_uri)
+      end
+    end
+  end
+
+  context "with path only redirection" do
+    let(:request_uri){'http://example.com/path'}
+    let(:redirect_path){'/new_path'}
+    let(:redirect_uri){"http://example.com:80#{redirect_path}"}
+
+    before do
+      stub_request(:get, redirect_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    context "via 301" do
+      before do
+        stub_request(:get, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 301, body: '', headers: {'location' => redirect_path})
+      end
+
+      it "does a redirect" do
+        expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        HTTP.get(request_uri)
+      end
+    end
+
+    context "via 302" do
+      before do
+        stub_request(:get, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 302, body: '', headers: {'location' => redirect_path})
+      end
+
+      it "does a redirect" do
+        expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
         HTTP.get(request_uri)
       end
     end

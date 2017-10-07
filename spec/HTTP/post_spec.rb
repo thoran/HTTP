@@ -6,15 +6,12 @@ $LOAD_PATH.unshift(spec_dir) unless $LOAD_PATH.include?(spec_dir)
 require 'spec_helper'
 require 'HTTP/post'
 
-WebMock.enable!
-WebMock.disable_net_connect!(allow_localhost: true)
-
 describe ".post" do
 
   context "with uri-only supplied" do
     before do
       stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -61,7 +58,7 @@ describe ".post" do
 
     before do
       stub_request(:post, "http://example.com/path").
-        with(body: {"a"=>"1", "b"=>"2"}, headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(body: {"a"=>"1", "b"=>"2"}, headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -86,7 +83,7 @@ describe ".post" do
 
     before do
       stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Rspec'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Rspec'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -105,7 +102,7 @@ describe ".post" do
 
     before do
       stub_request(:post, 'https://example.com:80/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -121,7 +118,7 @@ describe ".post" do
 
     before do
       stub_request(:post, 'http://example.com/path').
-        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
           to_return(status: 200, body: '', headers: {})
     end
 
@@ -145,12 +142,12 @@ describe ".post" do
       before do
         stub_request(:post, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-            to_return(status: '301', body: '', headers: {'location' => redirect_uri})
+            to_return(status: 301, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
         HTTP.post(request_uri)
       end
     end
@@ -159,12 +156,52 @@ describe ".post" do
       before do
         stub_request(:post, request_uri).
           with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-            to_return(status: '302', body: '', headers: {'location' => redirect_uri})
+            to_return(status: 302, body: '', headers: {'location' => redirect_uri})
       end
 
       it "does a redirect" do
         expect(HTTP).to receive(:post).with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {}).and_call_original
+        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        HTTP.post(request_uri)
+      end
+    end
+  end
+
+  context "with path only redirection" do
+    let(:request_uri){'http://example.com/path'}
+    let(:redirect_path){'/new_path'}
+    let(:redirect_uri){"http://example.com:80#{redirect_path}"}
+
+    before do
+      stub_request(:get, redirect_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    context "via 301" do
+      before do
+        stub_request(:post, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 301, body: '', headers: {'location' => redirect_path})
+      end
+
+      it "does a redirect" do
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
+        HTTP.post(request_uri)
+      end
+    end
+
+    context "via 302" do
+      before do
+        stub_request(:post, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+            to_return(status: 302, body: '', headers: {'location' => redirect_path})
+      end
+
+      it "does a redirect" do
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
         HTTP.post(request_uri)
       end
     end
