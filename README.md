@@ -89,7 +89,7 @@ end
 
 ```
 
-# Allowed values for the options hash (which passes through to Net::HTTP)
+## Allowed values for the options hash (which passes through to Net::HTTP)
 ```Ruby
 ca_file
     # Sets path of a CA certification file in PEM format.
