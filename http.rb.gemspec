@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
-  s.name = 'http.rb'
-  s.version = '0.11.1'
-  s.date = '2015-05-18'
+  s.name = 'http.rb' # I would have preferred 'http', but there's a library called http.rb with the gem name of http.  Confusing, eh?
+  s.version = '0.12.0'
+  s.date = '2017-10-07'
 
   s.summary = "HTTP made easy."
   s.description = "HTTP is the simplest HTTP mezzanine library for Ruby.  Supply a URI, \
-    some optional query arguments, some optional headers, and some other SSL or \
+    some optional query arguments, some optional headers, and some \
     Net::HTTP options, and that's it!"
   s.author = 'thoran'
   s.email = 'code@thoran.com'
