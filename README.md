@@ -19,7 +19,7 @@ Perhaps someone will appreciate its relative simplicity, since it is much smalle
 
 Add this line to your application's Gemfile:
 
-	gem 'HTTP'
+	gem 'http.rb'
 
 And then execute:
 
@@ -27,7 +27,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install HTTP
+    $ gem install http.rb
 
 
 ## Usage
