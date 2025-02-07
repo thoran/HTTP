@@ -1,0 +1,10 @@
+# 20250207
+# 0.12.1: Correctly handle POST'ing JSON data.
+1. ~ HTTP.post(): Check if the Content-Type is 'application/json' and assign the body JSON data otherwise assign the supplied hash to the form data.
+2. ~ spec/HTTP/post_spec.rb: + spec for when a request is being made with JSON data
+3. ~ spec/HTTP/post_spec.rb: Assign a headers variable to make the spec more readable.
+4. ~ spec/HTTP/post_spec.rb: Remove spaces between outer-most and second outer-most blocks.
+5. ~ spec/HTTP/get_spec.rb: Remove spaces between outer-most and second outer-most blocks.
+6. ~ README.md: Add # With JSON data section
+7. ~ http.rb.gemspec: /0.12.0/0.12.1/
+8. + CHANGELOG.txt

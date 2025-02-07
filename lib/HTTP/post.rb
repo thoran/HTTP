@@ -1,6 +1,7 @@
 # HTTP/post.rb
 # HTTP.post
 
+require 'json'
 require 'net/http'
 require 'openssl'
 require 'uri'
@@ -15,14 +16,18 @@ require 'URI/Generic/use_sslQ'
 
 module HTTP
 
-  def post(uri, form_data = {}, headers = {}, options = {}, &block)
+  def post(uri, data = {}, headers = {}, options = {}, &block)
     uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     options[:use_ssl] ||= uri.use_ssl?
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
     http.options = options
     request_object = Net::HTTP::Post.new(uri.request_uri)
-    request_object.form_data = form_data
+    if headers['Content-Type'] == 'application/json'
+      request_object.body = JSON.dump(data)
+    else
+      request_object.form_data = data
+    end
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
     response = http.request(request_object)

@@ -7,7 +7,6 @@ require 'spec_helper'
 require 'HTTP/get'
 
 describe ".get" do
-
   context "with uri-only supplied" do
     before do
       stub_request(:get, 'http://example.com/path').
@@ -205,5 +204,4 @@ describe ".get" do
       end
     end
   end
-
 end

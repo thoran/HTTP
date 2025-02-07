@@ -43,6 +43,10 @@ HTTP.post('http://example.com') # Admittedly doing a POST without providing form
 HTTP.get('http://example.com', {a: 1, b: 2})
 HTTP.post('http://example.com', {a: 1, b: 2})
 
+# With JSON data
+
+HTTP.post('http://example.com', {a: 1, b: 2}, {'Content-type' => 'application/json'})
+
 # With custom headers only
 
 HTTP.get('http://example.com', {}, {'User-Agent'=>'Custom'})
