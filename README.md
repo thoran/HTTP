@@ -19,7 +19,7 @@ Perhaps someone will appreciate its relative simplicity, since it is much smalle
 
 Add this line to your application's Gemfile:
 
-	gem 'http.rb'
+    gem 'HTTP.rb'
 
 And then execute:
 
@@ -27,7 +27,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install http.rb
+    $ gem install HTTP.rb
 
 
 ## Usage
@@ -75,6 +75,56 @@ HTTP.post('http://example.com', {a: 1, b: 2}, {'User-Agent'=>'Custom'}, {use_ssl
   # Do stuff with a subclass of Net::HTTPResponse here...
 end
 
+# Preventing redirections
+
+HTTP.get('http://example.com', {}, {}, {no_redirect: true})
+# => #<Net::HTTPResponse @code=3xx>
+
+# Response status predicate methods
+
+# 1xx
+response = HTTP.get('http://example.com')
+response.informational?
+# => true
+
+# 2xx
+response = HTTP.get('http://example.com')
+response.success?
+# => true
+
+# 3xx
+response = HTTP.get('http://example.com', {}, {}, {no_redirect: true})
+response.redirection?
+# => true
+response.success?
+# => false
+
+response = HTTP.get('http://example.com', {}, {}, {no_redirect: false})
+response.redirection?
+# => false
+response.success?
+# => true
+
+response = HTTP.get('http://example.com')
+response.redirection?
+# => false
+response.success?
+# => true
+
+# 4xx
+response = HTTP.get('http://example.com')
+response.client_error?
+# => true
+response.error?
+# => true
+
+# 5xx
+response = HTTP.get('http://example.com')
+response.server_error?
+# => true
+response.error?
+# => true
+
 # Including it in a class
 
 class A
@@ -93,8 +143,13 @@ end
 
 ```
 
-## Allowed values for the options hash (which passes through to Net::HTTP)
+## Allowed values for the options hash
+#### (These pass through to Net::HTTP, except for `no_redirect`.)
+
 ```Ruby
+no_redirect
+    # Prevents redirection if a 3xx response is encountered.
+
 ca_file
     # Sets path of a CA certification file in PEM format.
     #

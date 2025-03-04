@@ -1,3 +1,18 @@
+# 20250304
+# 0.13.0: Extend Net::HTTPResponse to allow use of predicate methods for statuses and optionally prevent redirections.
+1. + lib/Net/HTTPResponse/StatusPredicates.rb
+2. ~ HTTP/get.rb: + require 'Net/HTTPResponse/StatusPredicates'
+3. ~ HTTP/post.rb: + require 'Net/HTTPResponse/StatusPredicates'
+4. ~ HTTP.get(): Allow redirects to not be followed with no_redirect option.
+5. ~ HTTP.post(): Allow redirects to not be followed with no_redirect option.
+6. ~ spec/HTTP/get_spec.rb: Add success? and redirection? expectations throughout as is correct.
+7. ~ spec/HTTP/post_spec.rb: Add success? and redirection? expectations throughout as is correct.
+8. ~ README.md: Demonstrate usage of response status predicates.
+9. ~ README.md: Demonstrate usage of no_redirect option.
+10. ~ http.rb.gemspec: /0.12.1/0.13.0/
+11. /http.rb.gemspec/HTTP.rb.gemspec/ (I wonder if that's going to cause issues for rubygems.org...)
+12. ~ CHANGELOG.txt
+
 # 20250207
 # 0.12.1: Correctly handle POST'ing JSON data.
 1. ~ HTTP.post(): Check if the Content-Type is 'application/json' and assign the body JSON data otherwise assign the supplied hash to the form data.

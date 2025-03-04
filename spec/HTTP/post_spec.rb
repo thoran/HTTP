@@ -21,12 +21,14 @@ describe ".post" do
 
       it "creates an instance of URI" do
         expect(URI).to receive(:parse).with(uri).and_return(parsed_uri)
-        HTTP.post(uri)
+        response = HTTP.post(uri)
+        expect(response.success?).to eq(true)
       end
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-        HTTP.post(uri)
+        response = HTTP.post(uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -37,12 +39,14 @@ describe ".post" do
 
       it "returns an instance of URI" do
         expect(uri).to eq(uri)
-        HTTP.post(uri)
+        response = HTTP.post(uri)
+        expect(response.success?).to eq(true)
       end
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(uri.host, uri.port).and_return(net_http_object)
-        HTTP.post(uri)
+        response = HTTP.post(uri)
+        expect(response.success?).to eq(true)
       end
     end
   end
@@ -64,13 +68,15 @@ describe ".post" do
 
     it "sets the form data" do
       allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      HTTP.post(uri, args, headers)
+      response = HTTP.post(uri, args, headers)
       expect(request_object.body).to eq(encoded_form_data)
+      expect(response.success?).to eq(true)
     end
 
     it "creates a new Net::HTTP::Post object" do
       expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      HTTP.post(uri, args, headers)
+      response = HTTP.post(uri, args, headers)
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -91,13 +97,15 @@ describe ".post" do
 
     it "sets the body" do
       allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      HTTP.post(uri, args, headers)
+      response = HTTP.post(uri, args, headers)
       expect(request_object.body).to eq(json_data)
+      expect(response.success?).to eq(true)
     end
 
     it "creates a new Net::HTTP::Post object" do
       expect(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      HTTP.post(uri, args, headers)
+      response = HTTP.post(uri, args, headers)
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -116,8 +124,9 @@ describe ".post" do
 
     it "sets the headers on the request object" do
       allow(Net::HTTP::Post).to receive(:new).with(request_uri).and_return(request_object)
-      HTTP.post(uri, {}, headers)
+      response = HTTP.post(uri, {}, headers)
       expect(request_object['User-Agent']).to eq('Rspec')
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -135,8 +144,9 @@ describe ".post" do
 
     it "sets the use_ssl option on the Net::HTTP instance" do
       allow(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-      HTTP.post(uri, {}, {}, options)
+      response = HTTP.post(uri, {}, {}, options)
       expect(net_http_object.instance_variable_get(:@use_ssl)).to be_truthy
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -151,7 +161,6 @@ describe ".post" do
 
     it "yields an instance of Net::HTTPResponse" do
       expect{|b| HTTP.post(uri, &b)}.to yield_with_args(Net::HTTPResponse)
-      HTTP.post(uri){|response|}
     end
   end
 
@@ -174,8 +183,9 @@ describe ".post" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.post(request_uri)
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.post(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -188,8 +198,9 @@ describe ".post" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:post).with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.post(request_uri)
+        expect(HTTP).to receive(:get).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.post(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
   end
@@ -213,9 +224,10 @@ describe ".post" do
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        HTTP.post(request_uri)
+        response = HTTP.post(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -227,9 +239,43 @@ describe ".post" do
       end
 
       it "does a redirect" do
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
         expect(HTTP).to receive(:post).once.with(request_uri).and_call_original
-        HTTP.post(request_uri)
+        response = HTTP.post(request_uri)
+        expect(response.success?).to eq(true)
+      end
+    end
+  end
+
+  context "no_redirect true" do
+    let(:request_uri){'http://example.com/path'}
+    let(:redirect_uri){'http://redirected.com'}
+
+    context "via 301" do
+      before do
+        stub_request(:post, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 301, body: '', headers: {'location' => redirect_uri})
+      end
+
+      it "doesn't redirect" do
+        expect(HTTP).to receive(:post).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.post(request_uri, {}, {}, {no_redirect: true})
+        expect(response.redirection?).to eq(true)
+      end
+    end
+
+    context "via 302" do
+      before do
+        stub_request(:post, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 302, body: '', headers: {'location' => redirect_uri})
+      end
+
+      it "doesn't redirect" do
+        expect(HTTP).to receive(:post).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.post(request_uri, {}, {}, {no_redirect: true})
+        expect(response.redirection?).to eq(true)
       end
     end
   end

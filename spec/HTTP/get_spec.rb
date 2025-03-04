@@ -21,12 +21,14 @@ describe ".get" do
 
       it "creates an instance of URI" do
         expect(URI).to receive(:parse).with(uri).and_return(parsed_uri)
-        HTTP.get(uri)
+        response = HTTP.get(uri)
+        expect(response.success?).to eq(true)
       end
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-        HTTP.get(uri)
+        response = HTTP.get(uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -42,7 +44,8 @@ describe ".get" do
 
       it "creates a new Net::HTTP object" do
         expect(Net::HTTP).to receive(:new).with(uri.host, uri.port).and_return(net_http_object)
-        HTTP.get(uri)
+        response = HTTP.get(uri)
+        expect(response.success?).to eq(true)
       end
     end
   end
@@ -63,12 +66,14 @@ describe ".get" do
 
     it "x_www_form_urlencode's the args" do
       expect(args).to receive(:x_www_form_urlencode).and_return(x_www_form_urlencoded_arguments)
-      HTTP.get(uri, args)
+      response = HTTP.get(uri, args)
+      expect(response.success?).to eq(true)
     end
 
     it "creates a new Net::HTTP::Get object" do
       expect(Net::HTTP::Get).to receive(:new).with(get_argument).and_return(request_object)
-      HTTP.get(uri, args)
+      response = HTTP.get(uri, args)
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -87,8 +92,9 @@ describe ".get" do
 
     it "sets the headers on the request object" do
       allow(Net::HTTP::Get).to receive(:new).with(get_argument).and_return(request_object)
-      HTTP.get(uri, {}, headers)
+      response = HTTP.get(uri, {}, headers)
       expect(request_object['User-Agent']).to eq('Rspec')
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -106,8 +112,9 @@ describe ".get" do
 
     it "sets the use_ssl option on the Net::HTTP instance" do
       allow(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
-      HTTP.get(uri, {}, {}, options)
+      response = HTTP.get(uri, {}, {}, options)
       expect(net_http_object.instance_variable_get(:@use_ssl)).to be_truthy
+      expect(response.success?).to eq(true)
     end
   end
 
@@ -122,7 +129,6 @@ describe ".get" do
 
     it "yields an instance of Net::HTTPResponse" do
       expect{|b| HTTP.get(uri, &b)}.to yield_with_args(Net::HTTPResponse)
-      HTTP.get(uri){|response|}
     end
   end
 
@@ -145,8 +151,9 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.get(request_uri)
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.get(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -159,8 +166,9 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.get(request_uri)
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.get(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
   end
@@ -185,8 +193,9 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.get(request_uri)
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.get(request_uri)
+        expect(response.success?).to eq(true)
       end
     end
 
@@ -199,8 +208,42 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0})
-        HTTP.get(request_uri)
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        response = HTTP.get(request_uri)
+        expect(response.success?).to eq(true)
+      end
+    end
+  end
+
+  context "no_redirect true" do
+    let(:request_uri){'http://example.com/path'}
+    let(:redirect_uri){'http://redirected.com'}
+
+    context "via 301" do
+      before do
+        stub_request(:get, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 301, body: '', headers: {'location' => redirect_uri})
+      end
+
+      it "doesn't redirect" do
+        expect(HTTP).to receive(:get).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.get(request_uri, {}, {}, {no_redirect: true})
+        expect(response.redirection?).to eq(true)
+      end
+    end
+
+    context "via 302" do
+      before do
+        stub_request(:get, request_uri).
+          with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+            to_return(status: 302, body: '', headers: {'location' => redirect_uri})
+      end
+
+      it "doesn't redirect" do
+        expect(HTTP).to receive(:get).once.with(request_uri, {}, {}, {no_redirect: true}).and_call_original
+        response = HTTP.get(request_uri, {}, {}, {no_redirect: true})
+        expect(response.redirection?).to eq(true)
       end
     end
   end
