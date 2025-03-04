@@ -1,4 +1,8 @@
 # 20250304
+# 0.13.1: /HTTP.rb.gemspec/http.rb.gemspec/
+# 1. /HTTP.rb.gemspec/http.rb.gemspec/ (Wonder no more!)
+
+# 20250304
 # 0.13.0: Extend Net::HTTPResponse to allow use of predicate methods for statuses and optionally prevent redirections.
 1. + lib/Net/HTTPResponse/StatusPredicates.rb
 2. ~ HTTP/get.rb: + require 'Net/HTTPResponse/StatusPredicates'

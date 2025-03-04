@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-  s.name = 'HTTP.rb'
-  s.version = '0.13.0'
+  s.name = 'http.rb'
+  s.version = '0.13.1'
   s.date = '2025-03-04'
 
   s.summary = "HTTP made easy."
@@ -20,6 +20,4 @@ Gem::Specification.new do |s|
   ].flatten
 
   s.require_paths = ['lib']
-
-  s.has_rdoc = false
 end
